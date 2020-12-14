@@ -56,9 +56,9 @@ ds_train = (
 model = keras.Sequential([
     layers.InputLayer(input_shape=[64, 64, 3]),
     
-    preprocessing.RandomContrast(factor=0.10),
-    preprocessing.RandomFlip(mode='horizontal'),
-    preprocessing.RandomRotation(factor=0.10),
+    # preprocessing.RandomContrast(factor=0.10),
+    # preprocessing.RandomFlip(mode='horizontal'),
+    # preprocessing.RandomRotation(factor=0.10),
     
     # Block One
     layers.BatchNormalization(renorm=True),
@@ -93,7 +93,7 @@ model.compile(
 history = model.fit(
     ds_train,
     validation_data=ds_train , #remember to change this later
-    epochs=1,
+    epochs=5,
 )
 
 # Plot learning curves
@@ -101,4 +101,5 @@ history = model.fit(
 history_frame = pd.DataFrame(history.history)
 history_frame.loc[:, ['loss', 'val_loss']].plot()
 history_frame.loc[:, ['binary_accuracy', 'val_binary_accuracy']].plot()
+plt.show()
 
