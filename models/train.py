@@ -29,52 +29,54 @@ ds_train = (
     .prefetch(buffer_size=AUTOTUNE)
 )
 
-# augment = keras.Sequential([
-#     # preprocessing.RandomContrast(factor=0.5),
-#     # preprocessing.RandomFlip(mode='horizontal'), # meaning, left-to-right
-#     # preprocessing.RandomFlip(mode='vertical'), # meaning, top-to-bottom
-#     # preprocessing.RandomWidth(factor=0.15), # horizontal stretch
-#     # preprocessing.RandomRotation(factor=0.20),
-#     # preprocessing.RandomTranslation(height_factor=0.1, width_factor=0.1),
+# Data Augmentation
 
-#     preprocessing.RandomContrast(factor=0.10),
-#     preprocessing.RandomFlip(mode='horizontal'),
-#     preprocessing.RandomRotation(factor=0.10),
-# ])
+augment = keras.Sequential([
+    preprocessing.RandomContrast(factor=0.5),
+    preprocessing.RandomFlip(mode='horizontal'), # meaning, left-to-right
+    preprocessing.RandomFlip(mode='vertical'), # meaning, top-to-bottom
+    preprocessing.RandomWidth(factor=0.15), # horizontal stretch
+    preprocessing.RandomRotation(factor=0.20),
+    preprocessing.RandomTranslation(height_factor=0.1, width_factor=0.1),
+
+    preprocessing.RandomContrast(factor=0.10),
+    preprocessing.RandomFlip(mode='horizontal'),
+    preprocessing.RandomRotation(factor=0.10),
+])
 
 
-# ex = next(iter(ds_train.unbatch().map(lambda x, y: x).batch(1)))
+ex = next(iter(ds_train.unbatch().map(lambda x, y: x).batch(1)))
 
-# plt.figure(figsize=(10,10))
-# for i in range(16):
-#     image = augment(ex, training=True)
-#     plt.subplot(4, 4, i+1)
-#     plt.imshow(tf.squeeze(image))
-#     plt.axis('off')
-# plt.show()
+plt.figure(figsize=(10,10))
+for i in range(16):
+    image = augment(ex, training=True)
+    plt.subplot(4, 4, i+1)
+    plt.imshow(tf.squeeze(image))
+    plt.axis('off')
+plt.show()
 
 model = keras.Sequential([
     layers.InputLayer(input_shape=[64, 64, 3]),
     
-    # preprocessing.RandomContrast(factor=0.10),
-    # preprocessing.RandomFlip(mode='horizontal'),
-    # preprocessing.RandomRotation(factor=0.10),
+    preprocessing.RandomContrast(factor=0.10),
+    preprocessing.RandomFlip(mode='horizontal'),
+    preprocessing.RandomRotation(factor=0.10),
     
     # Block One
     layers.BatchNormalization(renorm=True),
     layers.Conv2D(filters=16, kernel_size=3, activation='relu', padding='same'),
     layers.MaxPool2D(),
 
-    # # Block Two
-    # layers.BatchNormalization(renorm=True),
-    # layers.Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'),
-    # layers.MaxPool2D(),
+    # Block Two
+    layers.BatchNormalization(renorm=True),
+    layers.Conv2D(filters=128, kernel_size=3, activation='relu', padding='same'),
+    layers.MaxPool2D(),
 
-    # # Block Three
-    # layers.BatchNormalization(renorm=True),
-    # layers.Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'),
-    # layers.Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'),
-    # layers.MaxPool2D(),
+    # Block Three
+    layers.BatchNormalization(renorm=True),
+    layers.Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'),
+    layers.Conv2D(filters=256, kernel_size=3, activation='relu', padding='same'),
+    layers.MaxPool2D(),
 
     # Head
     layers.BatchNormalization(renorm=True),
@@ -92,7 +94,7 @@ model.compile(
 
 history = model.fit(
     ds_train,
-    validation_data=ds_train , #remember to change this later
+    validation_data=ds_test , 
     epochs=5,
 )
 
